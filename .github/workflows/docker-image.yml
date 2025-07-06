@@ -14,6 +14,10 @@ jobs:
       packages: write
     steps:
     - uses: actions/checkout@v4
+
+    - name: Build all code and images using make
+      run: make
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
     - name: Set up Docker Buildx
@@ -27,11 +31,11 @@ jobs:
     - name: Set lowercase repository name
       id: repo_name_lower
       run: echo "repo_name=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./Dockerfile
-        platforms: linux/amd64,linux/arm64
-        push: true
-        tags: ghcr.io/${{ steps.repo_name_lower.outputs.repo_name }}:latest
+
+    - name: Tag Docker image for GitHub Container Registry
+      run: |
+        docker tag openscad/wasm-release ghcr.io/${{ steps.repo_name_lower.outputs.repo_name }}:latest
+
+    - name: Push Docker image to GitHub Container Registry
+      run: |
+        docker push ghcr.io/${{ steps.repo_name_lower.outputs.repo_name }}:latest
