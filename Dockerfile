@@ -13,9 +13,9 @@ ENV CMAKE_C_FLAGS="${EMSCRIPTEN_FLAGS}"
 ENV CMAKE_CXX_FLAGS="${EMSCRIPTEN_FLAGS}"
 ENV CMAKE_EXE_LINKER_FLAGS="${EMSCRIPTEN_FLAGS}"
 
-WORKDIR /
 COPY . .
-RUN emcmake cmake -B ../build . \
+WORKDIR /libs/openscad
+RUN emcmake cmake -B ../../build . \
         -DBoost_USE_STATIC_RUNTIME=ON \
         -DBoost_USE_STATIC_LIBS=ON \
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
@@ -23,4 +23,4 @@ RUN emcmake cmake -B ../build . \
         -DEXPERIMENTAL=ON \
         -DSNAPSHOT=ON \
         -G Ninja && \
-    cmake --build ../build --parallel
+    cmake --build ../../build --parallel
