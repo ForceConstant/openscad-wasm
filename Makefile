@@ -36,10 +36,10 @@ DOCKER_OCI_BASE ?= .oci.wasm-base$(VARIANT)-$(ENV)
 # See latest version in https://hub.docker.com/r/emscripten/emsdk/tags
 EMSCRIPTEN_VERSION ?= 4.0.10
 UNAME_MACHINE := $(shell uname -m)
-ifeq ($(UNAME_MACHINE),arm64)
-    EMSCRIPTEN_SDK_TAG=emscripten/emsdk:$(EMSCRIPTEN_VERSION)-arm64
-else
+ifeq ($(filter $(UNAME_MACHINE),arm64 aarch64),)
     EMSCRIPTEN_SDK_TAG=emscripten/emsdk:$(EMSCRIPTEN_VERSION)
+else
+    EMSCRIPTEN_SDK_TAG=emscripten/emsdk:$(EMSCRIPTEN_VERSION)-arm64
 endif
 
 all: build
@@ -70,7 +70,7 @@ runtime/node_modules:
 
 build/openscad.wasm.js: .image$(VARIANT)-$(ENV).make
 	mkdir -p build
-	docker rm -f tmpcpy
+	docker rm -f tmpcpy || true
 	docker run --name tmpcpy $(DOCKER_TAG_OPENSCAD)
 	docker cp tmpcpy:/home/build/openscad.js build/openscad.wasm.js
 	docker cp tmpcpy:/home/build/openscad.wasm build/
